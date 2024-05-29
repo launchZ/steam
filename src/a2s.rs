@@ -134,12 +134,12 @@ impl TryFrom<PacketBytes> for Packet_Challenge {
     }
 }
 
-trait RecvVecCursor {
-    fn recv_vec_cursor(&self) -> Result<Cursor<Vec<u8>>, Box<dyn Error>>;
+trait RecvPacketBytes {
+    fn recv_packet_bytes(&self) -> Result<PacketBytes, Box<dyn Error>>;
 }
 
-impl RecvVecCursor for UdpSocket {
-    fn recv_vec_cursor(&self) -> Result<Cursor<Vec<u8>>, Box<dyn Error>> {
+impl RecvPacketBytes for UdpSocket {
+    fn recv_packet_bytes(&self) -> Result<PacketBytes, Box<dyn Error>> {
         let mut buf = [0u8; 65535];
         let packet_size = self.recv(&mut buf)?;
         let packet = Cursor::new(Vec::from(&buf[0..packet_size]));
@@ -161,7 +161,7 @@ fn send_a2s_packet<A: ToSocketAddrs>(
     bytes.extend(challenge);
     socket.send_to(bytes.as_ref(), &addr)?;
 
-    let reply = socket.recv_vec_cursor()?.try_into()?;
+    let reply = socket.recv_packet_bytes()?.try_into()?;
     if let Packet::Challenge(p) = &reply {
         if retry_num < MAX_RETRIES {
             return send_a2s_packet(socket, addr, packet, &p.bytes_challenge, retry_num + 1);
