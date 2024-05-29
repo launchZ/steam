@@ -140,9 +140,12 @@ trait RecvPacketBytes {
 
 impl RecvPacketBytes for UdpSocket {
     fn recv_packet_bytes(&self) -> Result<PacketBytes, Box<dyn Error>> {
-        let mut buf = [0u8; 65535];
+        const MAX_PACKET_SIZE: usize = 65535;
+
+        let mut buf = [0u8; MAX_PACKET_SIZE];
         let packet_size = self.recv(&mut buf)?;
         let packet = Cursor::new(Vec::from(&buf[0..packet_size]));
+
         Ok(packet)
     }
 }
