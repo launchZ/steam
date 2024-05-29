@@ -3,6 +3,13 @@
 version = 3
 
 [[package]]
+name = "dev"
+version = "0.1.0"
+dependencies = [
+ "steam",
+]
+
+[[package]]
 name = "pretty-hex"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
