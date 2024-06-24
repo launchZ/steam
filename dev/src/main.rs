@@ -2,7 +2,8 @@ use std::error::Error;
 use std::fs;
 use std::net::UdpSocket;
 use std::time::Duration;
-use steam::a2s::packet::{query_info, query_players, query_rules, Packet};
+use steam::a2s::packet::Packet;
+use steam::a2s::query_rules;
 
 const ADDR: &str = "142.4.217.38:27016";
 // const ADDR: &str = "195.201.150.169:2402";
@@ -16,7 +17,11 @@ fn main() {
     print_debug(&rules);
     save_to_file(&rules);
 
-    if let Packet::Rules(_) = rules {}
+    if let Packet::Rules(rules) = rules {
+        for m in rules.mods() {
+            println!("{:10} {}", m.id, m.name)
+        }
+    }
 }
 
 fn open_socket() -> Result<UdpSocket, Box<dyn Error>> {
